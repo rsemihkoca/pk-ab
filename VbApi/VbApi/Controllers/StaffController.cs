@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace VbApi.Controllers;
 
-public class Stuff
+public class Staff
 {
     [Required]
     [StringLength(maximumLength: 250, MinimumLength = 10)]
@@ -21,14 +21,14 @@ public class Stuff
 
 [Route("api/[controller]")]
 [ApiController]
-public class StuffController : ControllerBase
+public class StaffController : ControllerBase
 {
-    public StuffController()
+    public StaffController()
     {
     }
 
     [HttpPost]
-    public Stuff Post([FromBody] Stuff value)
+    public Staff Post([FromBody] Staff value)
     {
         return value;
     }
