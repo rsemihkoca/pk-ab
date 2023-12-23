@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Vb.Base.Entity;
 
 namespace Vb.Data.Entity;
 
+[Table("Customer", Schema = "dbo")]
 public class Customer : BaseEntity
 {
     public string IdentityNumber { get; set; }
@@ -12,6 +14,11 @@ public class Customer : BaseEntity
     public int CustomerNumber { get; set; }
     public DateTime DateOfBirth { get; set; }
     public DateTime LastActivityDate { get; set; }
+    
+    
+    public virtual List<Address> Addresses { get; set; }
+    public virtual List<Contact> Contacts { get; set; }
+    public virtual List<Account> Accounts { get; set; }
 }
 
 public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
@@ -33,5 +40,20 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.HasIndex(x => x.IdentityNumber).IsUnique(true);
         builder.HasIndex(x => x.CustomerNumber).IsUnique(true);
+
+        builder.HasMany(x => x.Accounts)
+            .WithOne(x => x.Customer)
+            .HasForeignKey(x => x.CustomerId)
+            .IsRequired(true);
+        
+        builder.HasMany(x => x.Contacts)
+            .WithOne(x => x.Customer)
+            .HasForeignKey(x => x.CustomerId)
+            .IsRequired(true);
+        
+        builder.HasMany(x => x.Addresses)
+            .WithOne(x => x.Customer)
+            .HasForeignKey(x => x.CustomerId)
+            .IsRequired(true);
     }
 }

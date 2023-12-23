@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Vb.Data;
+
 namespace VbApi;
 
 public class Startup
@@ -11,6 +14,9 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        string connection = Configuration.GetConnectionString("MsSqlConnection");
+        services.AddDbContext<VbDbContext>(options => options.UseSqlServer(connection));
+        
         services.AddControllers();
         
         services.AddEndpointsApiExplorer();

@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Vb.Base.Entity;
 
 namespace Vb.Data.Entity;
 
+[Table("Contact", Schema = "dbo")]
 public class Contact : BaseEntity
 {
     public int CustomerId { get; set; }
