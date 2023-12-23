@@ -20,9 +20,6 @@ public class EftTransaction : BaseEntity
     public string SenderIban { get; set; }
     public string SenderName { get; set; }
 }
-
-
-
 public class EftTransactionConfiguration : IEntityTypeConfiguration<EftTransaction>
 {
     public void Configure(EntityTypeBuilder<EftTransaction> builder)
