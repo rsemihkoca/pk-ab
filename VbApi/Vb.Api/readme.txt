@@ -12,3 +12,7 @@ sln dizininde
 
 
 
+
+--ortak proje yapisinda 
+dotnet ef migrations add UniqueMigrationName
+dotnet ef database update

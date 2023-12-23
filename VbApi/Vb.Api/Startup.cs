@@ -16,6 +16,7 @@ public class Startup
     {
         string connection = Configuration.GetConnectionString("MsSqlConnection");
         services.AddDbContext<VbDbContext>(options => options.UseSqlServer(connection));
+        //services.AddDbContext<VbDbContext>(options => options.UseNpgsql(connection));
         
         services.AddControllers();
         
