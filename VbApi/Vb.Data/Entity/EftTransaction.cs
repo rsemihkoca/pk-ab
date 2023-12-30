@@ -6,7 +6,7 @@ using Vb.Base.Entity;
 namespace Vb.Data.Entity;
 
 [Table("EftTransaction", Schema = "dbo")]
-public class EftTransaction : BaseEntity
+public class EftTransaction : BaseEntityWithId
 {
     public int AccountId { get; set; }
     public virtual Account Account { get; set; }

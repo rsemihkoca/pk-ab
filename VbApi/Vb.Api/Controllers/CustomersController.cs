@@ -1,7 +1,9 @@
+using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Vb.Data;
+using Vb.Bussiness.Cqrs;
 using Vb.Data.Entity;
+using Vb.Schema;
 
 namespace VbApi.Controllers;
 
@@ -9,54 +11,51 @@ namespace VbApi.Controllers;
 [ApiController]
 public class CustomersController : ControllerBase
 {
-    private readonly VbDbContext dbContext;
-
-    public CustomersController(VbDbContext dbContext)
+    private readonly IMediator mediator;
+    private readonly IMapper mapper;
+    public CustomersController(IMediator mediator,IMapper mapper)
     {
-        this.dbContext = dbContext;
+        this.mediator = mediator;
+        this.mapper = mapper;
     }
 
     [HttpGet]
     public async Task<List<Customer>> Get()
     {
-        return await dbContext.Set<Customer>()
-            .ToListAsync();
+        var operation = new GetAllCustomerQuery();
+        var result = await mediator.Send(operation);
+        return result;
     }
 
     [HttpGet("{id}")]
     public async Task<Customer> Get(int id)
     {
-        var customer =  await dbContext.Set<Customer>()
-            .Include(x=> x.Accounts)
-            .Include(x=> x.Addresses)
-            .Include(x=> x.Contacts)
-            .Where(x => x.Id == id).FirstOrDefaultAsync();
-       
-        return customer;
+        var operation = new GetCustomerByIdQuery(id);
+        var result = await mediator.Send(operation);
+        return result;
     }
 
     [HttpPost]
-    public async Task Post([FromBody] Customer customer)
+    public async Task<CustomerResponse> Post([FromBody] CustomerRequest customer)
     {
-        await dbContext.Set<Customer>().AddAsync(customer);
-        await dbContext.SaveChangesAsync();
+        var customerEntity = mapper.Map<CustomerRequest, Customer>(customer);
+        var operation = new CreateCustomerCommand(customerEntity);
+        var result = await mediator.Send(operation);
+        return result;
     }
 
     [HttpPut("{id}")]
-    public async Task Put(int id, [FromBody] Customer customer)
+    public async Task Put(int id, [FromBody] CustomerRequest customer)
     {
-        var fromdb = await dbContext.Set<Customer>().Where(x => x.Id == id).FirstOrDefaultAsync();
-        fromdb.FirstName = customer.FirstName;
-        fromdb.LastName = customer.LastName;
-
-        await dbContext.SaveChangesAsync();
+        customer.CustomerNumber = id;
+        var operation = new UpdateCustomerCommand(id,customer);
+        await mediator.Send(operation);
     }
 
     [HttpDelete("{id}")]
     public async Task Delete(int id)
     {
-        var fromdb = await dbContext.Set<Customer>().Where(x => x.Id == id).FirstOrDefaultAsync();
-        fromdb.IsActive = false;
-        await dbContext.SaveChangesAsync();
+        var operation = new DeleteCustomerCommand(id);
+        await mediator.Send(operation);
     }
 }

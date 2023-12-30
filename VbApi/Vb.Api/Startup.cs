@@ -1,5 +1,11 @@
+
+using System.Reflection;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Vb.Bussiness;
 using Vb.Data;
+using MediatR;
+using Vb.Bussiness.Mapper;
 
 namespace VbApi;
 
@@ -17,6 +23,11 @@ public class Startup
         string connection = Configuration.GetConnectionString("MsSqlConnection");
         services.AddDbContext<VbDbContext>(options => options.UseSqlServer(connection));
         //services.AddDbContext<VbDbContext>(options => options.UseNpgsql(connection));
+        
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VbTransferCommand).GetTypeInfo().Assembly));
+
+        var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MapperConfig()));
+        services.AddSingleton(mapperConfig.CreateMapper());
         
         services.AddControllers();
         

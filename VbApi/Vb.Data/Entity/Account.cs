@@ -26,6 +26,8 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
 {
     public void Configure(EntityTypeBuilder<Account> builder)
     {
+        builder.Property(x => x.AccountNumber).ValueGeneratedNever();
+        
         builder.Property(x => x.InsertDate).IsRequired(true);
         builder.Property(x => x.InsertUserId).IsRequired(true);
         builder.Property(x => x.UpdateDate).IsRequired(false);
@@ -42,6 +44,7 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
 
         builder.HasIndex(x => x.CustomerId);
         builder.HasIndex(x => x.AccountNumber).IsUnique(true);
+        builder.HasKey(x => x.AccountNumber);
 
 
         builder.HasMany(x => x.AccountTransactions)

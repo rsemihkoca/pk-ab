@@ -6,7 +6,7 @@ using Vb.Base.Entity;
 namespace Vb.Data.Entity;
 
 [Table("Address", Schema = "dbo")]
-public class Address : BaseEntity
+public class Address : BaseEntityWithId
 {
     public int CustomerId { get; set; }
     public virtual Customer Customer { get; set; }
