@@ -19,6 +19,7 @@ public class AccountRequest : BaseRequest
 public class AccountResponse : BaseResponse
 {
     public int CustomerId { get; set; }
+    public string CustomerName { get; set; }
     public int AccountNumber { get; set; }
     public string IBAN { get; set; }
     public decimal Balance { get; set; }

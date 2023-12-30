@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vb.Base", "Vb.Base\Vb.Base.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vb.Schema", "Vb.Schema\Vb.Schema.csproj", "{D798C015-DEA9-4362-B76E-72359D941D9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vb.Bussiness", "Vb.Bussiness\Vb.Bussiness.csproj", "{0BAE4F2D-DACF-4959-8040-039168DD1A4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vb.Business", "Vb.Business\Vb.Business.csproj", "{0BAE4F2D-DACF-4959-8040-039168DD1A4F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vb.Data", "Vb.Data\Vb.Data.csproj", "{5EDBC4CE-7073-4AF7-AB22-3B8256962474}"
 EndProject

@@ -1,11 +1,12 @@
 
 using System.Reflection;
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using Vb.Bussiness;
 using Vb.Data;
-using MediatR;
-using Vb.Bussiness.Mapper;
+using Vb.Business.Cqrs;
+using Vb.Business.Mapper;
+using Vb.Business.Validator;
 
 namespace VbApi;
 
@@ -24,12 +25,16 @@ public class Startup
         services.AddDbContext<VbDbContext>(options => options.UseSqlServer(connection));
         //services.AddDbContext<VbDbContext>(options => options.UseNpgsql(connection));
         
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(VbTransferCommand).GetTypeInfo().Assembly));
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateCustomerCommand).GetTypeInfo().Assembly));
 
         var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MapperConfig()));
         services.AddSingleton(mapperConfig.CreateMapper());
-        
-        services.AddControllers();
+
+
+        services.AddControllers().AddFluentValidation(x =>
+        {
+            x.RegisterValidatorsFromAssemblyContaining<CreateCustomerValidator>();
+        });
         
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

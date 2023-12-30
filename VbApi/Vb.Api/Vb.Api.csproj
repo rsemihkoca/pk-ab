@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Vb.Bussiness\Vb.Bussiness.csproj" />
+      <ProjectReference Include="..\Vb.Business\Vb.Business.csproj" />
       <ProjectReference Include="..\Vb.Data\Vb.Data.csproj" />
       <ProjectReference Include="..\Vb.Schema\Vb.Schema.csproj" />
     </ItemGroup>
