@@ -31,5 +31,8 @@ public class MapperConfig : Profile
         
         CreateMap<EftTransactionRequest, EftTransaction>();
         CreateMap<EftTransaction, EftTransactionResponse>();
+        
+        CreateMap<ApplicationUserRequest, ApplicationUser>();
+        CreateMap<ApplicationUser, ApplicationUserResponse>();
     }
 }

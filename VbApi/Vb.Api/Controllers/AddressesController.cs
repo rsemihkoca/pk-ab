@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vb.Base.Response;
 using Vb.Business.Cqrs;
@@ -17,6 +18,7 @@ public class AddressesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse<List<AddressResponse>>> Get()
     {
         var operation = new GetAllAddressQuery();
@@ -25,6 +27,7 @@ public class AddressesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse<AddressResponse>> Get(int id)
     {
         var operation = new GetAddressByIdQuery(id);

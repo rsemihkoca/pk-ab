@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Vb.Base.Response;
 using Vb.Business.Cqrs;
@@ -11,12 +12,14 @@ namespace VbApi.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly IMediator mediator;
+
     public CustomersController(IMediator mediator)
     {
         this.mediator = mediator;
     }
 
     [HttpGet]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse<List<CustomerResponse>>> Get()
     {
         var operation = new GetAllCustomerQuery();
@@ -25,6 +28,7 @@ public class CustomersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse<CustomerResponse>> Get(int id)
     {
         var operation = new GetCustomerByIdQuery(id);
@@ -32,7 +36,20 @@ public class CustomersController : ControllerBase
         return result;
     }
 
+    [HttpGet("ByParameters")]
+    [Authorize(Roles = "admin")]
+    public async Task<ApiResponse<List<CustomerResponse>>> GetByParameter(
+        [FromQuery] string? FirstName,
+        [FromQuery] string? LastName,
+        [FromQuery] string? IdentityNumber)
+    {
+        var operation = new GetCustomerByParameterQuery(FirstName,LastName,IdentityNumber);
+        var result = await mediator.Send(operation);
+        return result;
+    }
+
     [HttpPost]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse<CustomerResponse>> Post([FromBody] CustomerRequest customer)
     {
         var operation = new CreateCustomerCommand(customer);
@@ -41,14 +58,16 @@ public class CustomersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse> Put(int id, [FromBody] CustomerRequest customer)
     {
-        var operation = new UpdateCustomerCommand(id,customer);
+        var operation = new UpdateCustomerCommand(id, customer);
         var result = await mediator.Send(operation);
         return result;
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<ApiResponse> Delete(int id)
     {
         var operation = new DeleteCustomerCommand(id);

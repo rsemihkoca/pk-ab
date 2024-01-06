@@ -1,4 +1,5 @@
 using AutoMapper;
+using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Vb.Base.Response;
@@ -56,15 +57,21 @@ public class CustomerQueryHandler :
     public async Task<ApiResponse<List<CustomerResponse>>> Handle(GetCustomerByParameterQuery request,
         CancellationToken cancellationToken)
     {
+        var predicate = PredicateBuilder.New<Customer>(true);
+        if (string.IsNullOrEmpty(request.FirstName))
+            
+            predicate.And(x => x.FirstName.ToUpper().Contains(request.FirstName.ToUpper()));
+        if (string.IsNullOrEmpty(request.LastName))
+            predicate.And(x => x.LastName.ToUpper().Contains(request.LastName.ToUpper()));
+        
+        if (string.IsNullOrEmpty(request.IdentityNumber))
+            predicate.And(x => x.IdentityNumber.ToUpper().Contains(request.IdentityNumber.ToUpper()));
+        
         var list =  await dbContext.Set<Customer>()
             .Include(x => x.Accounts)
             .Include(x => x.Contacts)
             .Include(x => x.Addresses)
-            .Where(x =>
-            x.FirstName.ToUpper().Contains(request.FirstName.ToUpper()) ||
-            x.LastName.ToUpper().Contains(request.LastName.ToUpper()) ||
-            x.IdentityNumber.ToUpper().Contains(request.IdentiyNumber.ToUpper())
-        ).ToListAsync(cancellationToken);
+            .Where(predicate).ToListAsync(cancellationToken);
         
         var mappedList = mapper.Map<List<Customer>, List<CustomerResponse>>(list);
         return new ApiResponse<List<CustomerResponse>>(mappedList);

@@ -2,7 +2,7 @@
 
 1- migration olusturma 
 Dbcontext in oldugu projede
-    dotnet ef migrations add UniqueMigrationName -s ../Vb.Api/ 
+    dotnet ef migrations add Users -s ../Vb.Api/ 
 
 
 2- migration degisikliklerini db ye gecme yansitma guncelle migrate etme
