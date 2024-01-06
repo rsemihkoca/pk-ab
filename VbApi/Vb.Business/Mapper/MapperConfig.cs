@@ -16,7 +16,6 @@ public class MapperConfig : Profile
             .ForMember(dest => dest.CustomerName,
                 src => src.MapFrom(x => x.Customer.FirstName + " " + x.Customer.LastName));
         
-        
         CreateMap<ContactRequest, Contact>();
         CreateMap<Contact, ContactResponse>()
             .ForMember(dest => dest.CustomerName,
@@ -26,7 +25,6 @@ public class MapperConfig : Profile
         CreateMap<Account, AccountResponse>()
             .ForMember(dest => dest.CustomerName,
                 src => src.MapFrom(x => x.Customer.FirstName + " " + x.Customer.LastName));
-
         
         CreateMap<AccountTransactionRequest, AccountTransaction>();
         CreateMap<AccountTransaction, AccountTransactionResponse>();

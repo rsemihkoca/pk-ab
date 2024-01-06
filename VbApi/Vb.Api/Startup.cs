@@ -7,6 +7,7 @@ using Vb.Data;
 using Vb.Business.Cqrs;
 using Vb.Business.Mapper;
 using Vb.Business.Validator;
+using VbApi.Middleware;
 
 namespace VbApi;
 
@@ -29,6 +30,10 @@ public class Startup
 
         var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile(new MapperConfig()));
         services.AddSingleton(mapperConfig.CreateMapper());
+        
+        services.AddSingleton<Service1>();
+        services.AddTransient<Service1>();
+        services.AddScoped<Service1>();
 
 
         services.AddControllers().AddFluentValidation(x =>
@@ -49,6 +54,9 @@ public class Startup
             app.UseSwaggerUI();
         }
 
+        app.UseMiddleware<HeartBeatMiddleware>(); 
+        app.UseMiddleware<ErrorHandlerMiddleware>(); 
+        
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
