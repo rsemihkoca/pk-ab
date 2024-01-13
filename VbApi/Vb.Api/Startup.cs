@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Text;
 using AutoMapper;
 using FluentValidation.AspNetCore;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +14,7 @@ using Vb.Base.Token;
 using Vb.Data;
 using Vb.Business.Cqrs;
 using Vb.Business.Mapper;
+using Vb.Business.Service;
 using Vb.Business.Validator;
 using VbApi.Middleware;
 
@@ -112,6 +115,23 @@ public class Startup
                 ClockSkew = TimeSpan.FromMinutes(2)
             };
         });
+        
+        
+        services.AddHangfire(configuration => configuration
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UsePostgreSqlStorage(Configuration.GetConnectionString("HangfireSqlConnection"), new PostgreSqlStorageOptions
+            {
+                TransactionSynchronisationTimeout = TimeSpan.FromMinutes(5),
+                InvisibilityTimeout = TimeSpan.FromMinutes(5),
+                QueuePollInterval = TimeSpan.FromMinutes(5),
+            }));
+        services.AddHangfireServer();
+
+
+        services.AddScoped<INotificationService, NotificationService>();
+
     }
     
     public void Configure(IApplicationBuilder app,IWebHostEnvironment env)
@@ -129,6 +149,8 @@ public class Startup
         app.UseHttpsRedirection();
 
         app.UseResponseCaching();
+
+        app.UseHangfireDashboard();
 
         app.UseAuthentication();
         app.UseRouting();
