@@ -29,6 +29,7 @@ public class CustomersController : ControllerBase
 
     [HttpGet("{id}")]
     [Authorize(Roles = "admin")]
+    [ResponseCache]
     public async Task<ApiResponse<CustomerResponse>> Get(int id)
     {
         var operation = new GetCustomerByIdQuery(id);

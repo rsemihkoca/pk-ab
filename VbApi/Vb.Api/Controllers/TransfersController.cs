@@ -1,6 +1,10 @@
+using System.Text;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using Vb.Base.Response;
 using Vb.Business.Cqrs;
 using Vb.Schema;
@@ -13,10 +17,14 @@ namespace VbApi.Controllers;
 public class TransfersController : ControllerBase
 {
     private readonly IMediator mediator;
+    private readonly IMemoryCache memoryCache;
+    private readonly IDistributedCache distributedCache;
 
-    public TransfersController(IMediator mediator)
+    public TransfersController(IMediator mediator, IMemoryCache memoryCache,IDistributedCache distributedCache)
     {
         this.mediator = mediator;
+        this.memoryCache = memoryCache;
+        this.distributedCache = distributedCache;
     }
 
     [HttpPost("Transfer")]
@@ -39,14 +47,67 @@ public class TransfersController : ControllerBase
     }
 
 
-    [HttpGet("ByReferenceNumber")]
-    [Authorize(Roles = "admin")]
-    public async Task<ApiResponse<List<AccountTransactionResponse>>> GetByReferenceNumber(
-        [FromQuery] string? ReferenceNumber)
+    [HttpGet("ByReferenceNumberMemory/{ReferenceNumber}")]
+    public async Task<ApiResponse<List<AccountTransactionResponse>>> ByReferenceNumberMemory(string ReferenceNumber)
     {
+        var cacheResult =
+            memoryCache.TryGetValue(ReferenceNumber, out ApiResponse<List<AccountTransactionResponse>> cacheData);
+        if (cacheResult)
+        {
+            return cacheData;
+        }
+        
         var operation = new GetMoneyTransferTransactionByReferenceNumberQuery(ReferenceNumber);
         var result = await mediator.Send(operation);
+
+        if (result.Response.Any())
+        {
+            var options = new MemoryCacheEntryOptions()
+            {
+                Priority = CacheItemPriority.High,
+                AbsoluteExpiration = DateTime.Now.AddDays(1),
+                SlidingExpiration = TimeSpan.FromHours(1)
+            };
+            memoryCache.Set(ReferenceNumber, result, options);
+        }
         return result;
+    }
+    
+    [HttpGet("ByReferenceNumberRedis/{ReferenceNumber}")]
+    public async Task<ApiResponse<List<AccountTransactionResponse>>> ByReferenceNumberRedis(string ReferenceNumber)
+    {
+        var cacheResult = await  distributedCache.GetAsync(ReferenceNumber);
+        if (cacheResult != null)
+        {
+            string json = Encoding.UTF8.GetString(cacheResult);
+            var response = JsonConvert.DeserializeObject<List<AccountTransactionResponse>>(json);
+            return new ApiResponse<List<AccountTransactionResponse>>(response);
+        }
+        
+        var operation = new GetMoneyTransferTransactionByReferenceNumberQuery(ReferenceNumber);
+        var result = await mediator.Send(operation);
+
+        if (result.Response.Any())
+        {
+            string responseJson = JsonConvert.SerializeObject(result.Response);
+            byte[] responseArr = Encoding.UTF8.GetBytes(responseJson);
+            
+            var options = new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpiration = DateTime.Now.AddDays(1),
+                SlidingExpiration = TimeSpan.FromHours(1)
+            };
+           await  distributedCache.SetAsync(ReferenceNumber, responseArr, options);
+        }
+        return result;
+    }
+    
+    [HttpDelete("ByReferenceNumber/{ReferenceNumber}/DeleteCache")]
+    public async Task<ApiResponse> DeleteCache(string ReferenceNumber)
+    {
+        memoryCache.Remove(ReferenceNumber);
+        distributedCache.Remove(ReferenceNumber);
+        return new ApiResponse();
     }
 
     [HttpGet("ByParameters")]
