@@ -20,6 +20,9 @@ public class AccountTransactionResponse : BaseResponse
 {
     public int Id { get; set; }
     public int AccountId { get; set; }
+    public string AccountName { get; set; }
+    public string CustomerName { get; set; }
+    public int CustomerNumber { get; set; }
     public string ReferenceNumber { get; set; }
     public DateTime TransactionDate { get; set; }
     public decimal DebitAmount { get; set; }

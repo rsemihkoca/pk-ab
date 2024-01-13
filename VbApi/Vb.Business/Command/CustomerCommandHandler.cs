@@ -68,7 +68,6 @@ public class CustomerCommandHandler :
         {
             return new ApiResponse("Record not found");
         }
-        //dbContext.Set<Customer>().Remove(fromdb);
         
         fromdb.IsActive = false;
         await dbContext.SaveChangesAsync(cancellationToken);

@@ -9,59 +9,59 @@ namespace VbApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AddresssController : ControllerBase
+public class ContactsController : ControllerBase
 {
     private readonly IMediator mediator;
 
-    public AddresssController(IMediator mediator)
+    public ContactsController(IMediator mediator)
     {
         this.mediator = mediator;
     }
 
     [HttpGet]
     [Authorize(Roles = "admin")]
-    public async Task<ApiResponse<List<AddressResponse>>> Get()
+    public async Task<ApiResponse<List<ContactResponse>>> Get()
     {
-        var operation = new GetAllAddressQuery();
+        var operation = new GetAllContactQuery();
         var result = await mediator.Send(operation);
         return result;
     }
 
     [HttpGet("{id}")]
     [Authorize(Roles = "admin")]
-    public async Task<ApiResponse<AddressResponse>> Get(int id)
+    public async Task<ApiResponse<ContactResponse>> Get(int id)
     {
-        var operation = new GetAddressByIdQuery(id);
+        var operation = new GetContactByIdQuery(id);
         var result = await mediator.Send(operation);
         return result;
     }
 
     [HttpGet("ByParameters")]
     [Authorize(Roles = "admin")]
-    public async Task<ApiResponse<List<AddressResponse>>> GetByParameter(
+    public async Task<ApiResponse<List<ContactResponse>>> GetByParameter(
         [FromQuery] string? FirstName,
         [FromQuery] string? LastName,
         [FromQuery] string? IdentityNumber)
     {
-        var operation = new GetAddressByParameterQuery(FirstName,LastName,IdentityNumber);
+        var operation = new GetContactByParameterQuery(FirstName,LastName,IdentityNumber);
         var result = await mediator.Send(operation);
         return result;
     }
 
     [HttpPost]
     [Authorize(Roles = "admin")]
-    public async Task<ApiResponse<AddressResponse>> Post([FromBody] AddressRequest Address)
+    public async Task<ApiResponse<ContactResponse>> Post([FromBody] ContactRequest Contact)
     {
-        var operation = new CreateAddressCommand(Address);
+        var operation = new CreateContactCommand(Contact);
         var result = await mediator.Send(operation);
         return result;
     }
 
     [HttpPut("{id}")]
     [Authorize(Roles = "admin")]
-    public async Task<ApiResponse> Put(int id, [FromBody] AddressRequest Address)
+    public async Task<ApiResponse> Put(int id, [FromBody] ContactRequest Contact)
     {
-        var operation = new UpdateAddressCommand(id, Address);
+        var operation = new UpdateContactCommand(id, Contact);
         var result = await mediator.Send(operation);
         return result;
     }
@@ -70,7 +70,7 @@ public class AddresssController : ControllerBase
     [Authorize(Roles = "admin")]
     public async Task<ApiResponse> Delete(int id)
     {
-        var operation = new DeleteAddressCommand(id);
+        var operation = new DeleteContactCommand(id);
         var result = await mediator.Send(operation);
         return result;
     }
